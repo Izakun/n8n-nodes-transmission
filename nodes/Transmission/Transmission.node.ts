@@ -29,7 +29,7 @@ export class Transmission implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Transmission',
 		name: 'transmission',
-		icon: { light: 'file:transmission.svg', dark: 'file:transmission.svg' },
+		icon: { light: 'file:transmission.svg', dark: 'file:transmission.dark.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
