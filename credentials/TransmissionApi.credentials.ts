@@ -1,4 +1,4 @@
-import { ICredentialType, INodeProperties } from 'n8n-workflow';
+import { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class TransmissionApi implements ICredentialType {
 	name = 'transmissionApi';
@@ -37,4 +37,18 @@ export class TransmissionApi implements ICredentialType {
 			description: 'RPC password (leave empty if authentication is disabled)',
 		},
 	];
+
+	// The RPC endpoint requires an X-Transmission-Session-Id handshake (409 on the
+	// first call), so validate reachability + HTTP Basic auth against the web UI.
+	test: ICredentialTestRequest = {
+		request: {
+			method: 'GET',
+			baseURL: '={{$credentials.baseUrl}}',
+			url: '/transmission/web/',
+			auth: {
+				username: '={{$credentials.username}}',
+				password: '={{$credentials.password}}',
+			},
+		},
+	};
 }
