@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-transmission",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "n8n community node for Transmission (BitTorrent client) via its RPC API",
   "keywords": [
     "n8n-community-node-package",

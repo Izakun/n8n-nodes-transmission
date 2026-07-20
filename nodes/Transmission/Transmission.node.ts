@@ -86,7 +86,7 @@ export class Transmission implements INodeType {
 
 				let sessionId = '';
 				const post = () =>
-					this.helpers.httpRequest({
+					this.helpers.httpRequestWithAuthentication.call(this, 'transmissionApi', {
 						method: 'POST' as IHttpRequestMethods,
 						baseURL,
 						url: '/transmission/rpc',
@@ -107,7 +107,7 @@ export class Transmission implements INodeType {
 						sessionId = sid as string;
 						response = await post();
 					} else {
-						throw err;
+						throw new NodeApiError(this.getNode(), err as JsonObject, { itemIndex: i });
 					}
 				}
 

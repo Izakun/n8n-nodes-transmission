@@ -1,4 +1,9 @@
-import { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
+import {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
+	ICredentialType,
+	INodeProperties,
+} from 'n8n-workflow';
 
 export class TransmissionApi implements ICredentialType {
 	name = 'transmissionApi';
@@ -50,5 +55,12 @@ export class TransmissionApi implements ICredentialType {
 				password: '={{$credentials.password}}',
 			},
 		},
+	};
+
+	// No transport auth to inject here (handled inside the node); this block
+	// lets the node use httpRequestWithAuthentication.
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {},
 	};
 }
