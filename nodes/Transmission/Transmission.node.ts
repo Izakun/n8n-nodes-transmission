@@ -178,21 +178,25 @@ export class Transmission implements INodeType {
 							: headers,
 						body: { method, arguments: args },
 						json: true,
-					} as IHttpRequestOptions);
+						returnFullResponse: true,
+						ignoreHttpStatusErrors: true,
+					} as IHttpRequestOptions) as Promise<{ statusCode: number; headers: IDataObject; body: unknown }>;
 
-				let response;
-				try {
-					response = await post();
-				} catch (err) {
-					// Transmission answers the first call with 409 + the session id header.
-					const sid = err?.response?.headers?.['x-transmission-session-id'];
-					if ((err?.response?.status ?? err?.httpCode) === 409 && sid) {
-						sessionId = sid as string;
-						response = await post();
-					} else {
-						throw new NodeApiError(this.getNode(), err as JsonObject, { itemIndex: i });
-					}
+				// Transmission answers the first call with 409 + the session id header;
+				// read it and retry (ignoreHttpStatusErrors keeps the 409 from throwing).
+				let full = await post();
+				if (full.statusCode === 409) {
+					const h = full.headers ?? {};
+					sessionId = (h['x-transmission-session-id'] ?? h['X-Transmission-Session-Id']) as string;
+					full = await post();
 				}
+				if (full.statusCode >= 400) {
+					throw new NodeApiError(this.getNode(), (full.body ?? {}) as JsonObject, {
+						itemIndex: i,
+						httpCode: String(full.statusCode),
+					});
+				}
+				const response = full.body;
 
 				const resArgs = (response as IDataObject)?.arguments as IDataObject;
 				const torrents = resArgs?.torrents as IDataObject[] | undefined;
